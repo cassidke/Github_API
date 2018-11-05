@@ -44,6 +44,19 @@ myData = fromJSON("https://api.github.com/users/cassidke")
 myData$followers
 myData$public_repos
 
+# The below code give specific details on the people following me
+
+myFollowers = fromJSON("https://api.github.com/users/cassidke/followers")
+myFollowers$login
+length = length(myFollowers$login)
+length #Number of people following me
+
+# The below code will give more information about my repositories
+
+repos = fromJSON("https://api.github.com/users/cassidke/repos")
+repos$name
+repos$created_at
+
 # Using user 'phadej' 
 phadejData = GET("https://api.github.com/users/phadej/followers?per_page=100;", gtoken)
 stop_for_status(phadejData)
