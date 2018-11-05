@@ -57,6 +57,14 @@ repos = fromJSON("https://api.github.com/users/cassidke/repos")
 repos$name
 repos$created_at
 
+# The below allows you to view the data as JSON, the way it is done in browser
+
+myDataJSon = toJSON(myData, pretty = TRUE)
+myDataJSon
+
+# There are two methods of interrogating data. The above allows you to go through the JSON data.
+# Below I am going to interrogate another user and put there data into a data.frame
+
 # Using user 'phadej' 
 phadejData = GET("https://api.github.com/users/phadej/followers?per_page=100;", gtoken)
 stop_for_status(phadejData)
