@@ -11,8 +11,8 @@ oauth_endpoints("github")
 
 # Change based on what your application is
 github_app = oauth_app(appname = "Software_Engineering_API",
-                  key = "fd4572a8fe9bcb5a9151",
-                  secret = "3a8cedf5914c09bc141e7019e31eeb3df1dd277a")
+                       key = "fd4572a8fe9bcb5a9151",
+                       secret = "3a8cedf5914c09bc141e7019e31eeb3df1dd277a")
 
 # Get OAuth credentials
 github_token <- oauth2.0_token(oauth_endpoints("github"), github_app)
@@ -36,6 +36,25 @@ gitDF[gitDF$full_name == "jtleek/datasharing", "created_at"]
 # The code above was sourced from Michael Galarnyk's blog, found at:
 # https://towardsdatascience.com/accessing-data-from-github-api-using-r-3633fb62cb08
 
+# -----------------------------------------------------------------------------------
+# Interrogate the Github API. R will return the number of followers and public repositories
+# in my personal GitHub
+
 myData = fromJSON("https://api.github.com/users/cassidke")
 myData$followers
 myData$public_repos
+
+# Using user 'phadej' 
+phadejData = GET("https://api.github.com/users/phadej/followers?per_page=100;", gtoken)
+stop_for_status(phadejData)
+
+# Extract content from phadej
+extract = content(phadejData)
+
+# Convert content to dataframe
+githubDB = jsonlite::fromJSON(jsonlite::toJSON(extract))
+
+# Subset dataframe
+githubDB$login
+
+
