@@ -38,7 +38,7 @@ gitDF[gitDF$full_name == "jtleek/datasharing", "created_at"]
 
 # -----------------------------------------------------------------------------------
 # Interrogate the Github API. R will return the number of followers and public repositories
-# in my personal GitHub
+# in my personal GitHub. I can look at snother persons if I change the username.
 
 myData = fromJSON("https://api.github.com/users/cassidke")
 myData$followers
@@ -66,16 +66,59 @@ myDataJSon
 # Below I am going to interrogate another user and put there data into a data.frame
 
 # Using user 'phadej' 
+
 phadejData = GET("https://api.github.com/users/phadej/followers?per_page=100;", gtoken)
 stop_for_status(phadejData)
 
 # Extract content from phadej
+
 extract = content(phadejData)
 
 # Convert content to dataframe
+
 githubDB = jsonlite::fromJSON(jsonlite::toJSON(extract))
 
 # Subset dataframe
+
 githubDB$login
+
+# Retrieve a list of usernames
+
+id = githubDB$login
+user_ids = c(id)
+
+# Create an empty vector and data.frame
+
+users = c()
+usersDB = data.frame(
+  
+  username = integer(),
+  following = integer(),
+  followers = integer(),
+  repos = integer(),
+  dateCreated = integer
+  
+)
+
+# Loop through users and find users to add to list
+
+for(i in 1:length(user_ids))
+{
+  #Retrieve a list of individual users 
+  followingURL = paste("https://api.github.com.users", user_ids[i], "/following", sep = "")
+  followingRequest = GET(followingURL, gtoken)
+  followingContent = content(followingRequest)
+  
+  #Ignore if they have no followers
+  if(length(followingContent) == 0)
+  {
+    next
+  }
+  
+  followingDF = jsonlite::fromJSON(jsonlite::toJSON(followingContent))
+  followingLogin = followingDF$login
+
+}
+
 
 
