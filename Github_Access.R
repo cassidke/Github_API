@@ -70,12 +70,12 @@ myDataJSon
 
 # Using user 'phadej' 
 
-phadejData = GET("https://api.github.com/users/phadej/followers?per_page=100;", gtoken)
-stop_for_status(phadejData)
+userData = GET("https://api.github.com/users/khotyn/followers?per_page=100;", gtoken)
+stop_for_status(userData)
 
 # Extract content from phadej
 
-extract = content(phadejData)
+extract = content(userData)
 
 # Convert content to dataframe
 
@@ -164,9 +164,27 @@ usersDB = data.frame(
   
 #Link R to plotly. This creates online interactive graphs based on the d3js library
 Sys.setenv("plotly_username"="cassidke")
-Sys.setenv("plotly_api_key"="••••••••••")
+Sys.setenv("plotly_api_key"="2ezrFydJNHrMjAXSNtjX")
 
-MyPlot1 = plot_ly(data = usersDB, x = ~repos, y = Followers, 
-                  text = ~paste("Followers: ", Followers, "<br>Repositories: ", 
-                                Repositories, "<br>Date Created:", DateCreated), color = ~DateCreated)
-api_create(MyPlot1, filename = "Followers vs Repositories by Date")
+plot1 = plot_ly(data = usersDB, x = ~repos, y = ~followers, 
+                  text = ~paste("Followers: ", followers, "<br>Repositories: ", 
+                                repos, "<br>Date Created:", dateCreated), color = ~dateCreated)
+plot1
+
+#Upload the plot to Plotly
+Sys.setenv("plotly_username"="cassidke")
+Sys.setenv("plotly_api_key"="2ezrFydJNHrMjAXSNtjX")
+api_create(plot1, filename = "Followers vs Repositories by Date")
+#PLOTLY LINK: https://plot.ly/~cassidke/1
+
+plot2 = plot_ly(data = usersDB, x = ~following, y = ~followers, 
+                 text = ~paste("Followers: ", followers, "<br>Following: ", 
+                               following))
+plot2
+
+#Upload the plot to Plotly
+Sys.setenv("plotly_username"="cassidke")
+Sys.setenv("plotly_api_key"="2ezrFydJNHrMjAXSNtjX")
+api_create(plot1, filename = "Followers vs Following")
+#PLOTLY LINK: https://plot.ly/~cassidke/1
+
