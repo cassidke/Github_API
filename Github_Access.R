@@ -1,10 +1,13 @@
 #install.packages("jsonlite")
 #install.packages("httpuv")
 #install.packages("httr")
-
+install.packages("plotly")
 library(jsonlite)
 library(httpuv)
 library(httr)
+
+require(devtools)
+library(plotly)
 
 # Can be github, linkedin etc depending on application
 oauth_endpoints("github")
@@ -96,28 +99,28 @@ usersDB = data.frame(
   following = integer(),
   followers = integer(),
   repos = integer(),
-  dateCreated = integer
+  dateCreated = integer()
   
 )
-
-# Loop through users and find users to add to list
-
-for(i in 1:length(user_ids))
-{
-  #Retrieve a list of individual users 
-  followingURL = paste("https://api.github.com.users", user_ids[i], "/following", sep = "")
-  followingRequest = GET(followingURL, gtoken)
-  followingContent = content(followingRequest)
   
-  #Ignore if they have no followers
-  if(length(followingContent) == 0)
+  # Loop through users and find users to add to list
+  
+  for(i in 1:length(user_ids))
   {
-    next
-  }
-  
-  followingDF = jsonlite::fromJSON(jsonlite::toJSON(followingContent))
-  followingLogin = followingDF$login
-  
+    #Retrieve a list of individual users 
+    followingURL = paste("https://api.github.com/users/", user_ids[i], "/following", sep = "")
+    followingRequest = GET(followingURL, gtoken)
+    followingContent = content(followingRequest)
+    
+    #Ignore if they have no followers
+    if(length(followingContent) == 0)
+    {
+      next
+    }
+    
+    followingDF = jsonlite::fromJSON(jsonlite::toJSON(followingContent))
+    followingLogin = followingDF$login
+    
     #Loop through 'following' users
     for (j in 1:length(followingLogin))
     {
@@ -158,3 +161,12 @@ for(i in 1:length(user_ids))
     }
     next
   }
+  
+#Link R to plotly. This creates online interactive graphs based on the d3js library
+Sys.setenv("plotly_username"="cassidke")
+Sys.setenv("plotly_api_key"="••••••••••")
+
+MyPlot1 = plot_ly(data = usersDB, x = ~repos, y = Followers, 
+                  text = ~paste("Followers: ", Followers, "<br>Repositories: ", 
+                                Repositories, "<br>Date Created:", DateCreated), color = ~DateCreated)
+api_create(MyPlot1, filename = "Followers vs Repositories by Date")
