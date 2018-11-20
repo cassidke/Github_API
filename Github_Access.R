@@ -188,3 +188,62 @@ Sys.setenv("plotly_api_key"="2ezrFydJNHrMjAXSNtjX")
 api_create(plot1, filename = "Followers vs Following")
 #PLOTLY LINK: https://plot.ly/~cassidke/1
 
+
+#LANGUAGES
+#The following code finds the most popular language for each user
+
+#Create empty vector
+Languages = c()
+
+#Loop through all the users
+for (i in 1:length(users))
+{
+  #Access each users repositories and save in a dataframe
+  RepositoriesUrl = paste("https://api.github.com/users/", users[i], "/repos", sep = "")
+  Repositories = GET(RepositoriesUrl, gtoken)
+  RepositoriesContent = content(Repositories)
+  RepositoriesDF = jsonlite::fromJSON(jsonlite::toJSON(RepositoriesContent))
+  
+  #Find names of all the repositories for the given user
+  RepositoriesNames = RepositoriesDF$name
+  
+  #Loop through all the repositories of an individual user
+  for (j in 1: length(RepositoriesNames))
+  {
+    #Find all repositories and save in data frame
+    RepositoriesUrl2 = paste("https://api.github.com/repos/", users[i], "/", RepositoriesNames[j], sep = "")
+    Repositories2 = GET(RepositoriesUrl2, gtoken)
+    RepositoriesContent2 = content(Repositories2)
+    RepositoriesDF2 = jsonlite::fromJSON(jsonlite::toJSON(RepositoriesContent2))
+    
+    #Find the language which each repository was written in
+    Language = RepositoriesDF2$language
+    
+    #Skip a repository if it has no language
+    if (length(Language) != 0 && Language != "<NA>")
+    {
+      #Add the languages to a list
+      Languages[length(Languages)+1] = Language
+    }
+    next
+  }
+  next
+}
+
+#Save the top 20 languages in a table
+LanguageTable = sort(table(Languages), increasing=TRUE)
+LanguageTableTop20 = LanguageTable[(length(LanguageTable)-19):length(LanguageTable)]
+
+#Save this table as a data frame
+LanguageDF = as.data.frame(LanguageTableTop20)
+
+#Plot the data frame of languages
+plot3 = plot_ly(data = LanguageDF, x = LanguageDF$Languages, y = LanguageDF$Freq, type = "bar")
+plot3
+
+#Upload the plot to Plotly
+Sys.setenv("plotly_username"="cassidke")
+Sys.setenv("plotly_api_key"="2ezrFydJNHrMjAXSNtjX")
+api_create(plot3, filename = "20 Most Popular Languages")
+#PLOTLY LINK: https://plot.ly/~cassidkes/3
+
